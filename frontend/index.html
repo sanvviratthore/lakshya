@@ -1616,8 +1616,9 @@
 </div>
 
 <script>
-  const STORAGE_KEY = 'lakshya_user_data';
-  const API_BASE = 'http://localhost:8000/api/v1';
+const STORAGE_KEY = 'lakshya_user_data';
+const API_BASE = "http://localhost:8000/api/v1";
+
   let userData = null;
   
   // Dashboard mentor chat state
@@ -1763,6 +1764,67 @@
       mentorChatState_Dashboard.typingEl = null;
     }
   }
+
+  function sendQuickPrompt(text) {
+    const input = document.getElementById('mentorChatInput');
+    if (input) {
+        input.value = text;
+        sendToMentor(text);
+    }
+}
+
+// --- 4. THE FIRE CALCULATOR ---
+// Add this if you want the main FIRE button to work
+async function runFIRECalculation() {
+    const savings = parseFloat(document.getElementById('input-savings')?.value) || 0;
+    const sip = parseFloat(document.getElementById('input-sip')?.value) || 0;
+    
+    // Call the same AI route for a summary
+    sendToMentor(`Analyze my FIRE path: Current Savings ₹${savings}, Monthly SIP ₹${sip}`);
+}
+
+  async function runFIRECalculation() {
+    const btn = document.getElementById('fire-calc-btn'); // Make sure this ID matches your button
+    const adviceBox = document.getElementById('ai-advice-text');
+    
+    // 1. Get Values from the UI
+    const savings = parseFloat(document.getElementById('input-savings').value) || 0;
+    const sip = parseFloat(document.getElementById('input-sip').value) || 0;
+    const target = 50000000; // 5 Crore Target
+
+    // UI Feedback
+    btn.innerText = "Simulating Paths...";
+    adviceBox.innerHTML = "Consulting Lakshya AI...";
+
+    try {
+        // 2. Call your Backend
+        const response = await fetch(`http://localhost:8000/api/v1/fire-analysis`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                current_savings: savings,
+                monthly_invest: sip,
+                target_corpus: target
+            })
+        });
+
+        const data = await response.json();
+
+        // 3. Update the UI with Gemini's response
+        adviceBox.innerHTML = data.ai_summary;
+        
+        // 4. Update the Chart (If you have a function for Chart.js)
+        if (window.myChart) {
+            updateChartData(data.chart_data);
+        }
+
+        btn.innerText = "Re-Calculate";
+    } catch (err) {
+        console.error(err);
+        adviceBox.innerHTML = "Error connecting to Lakshya Brain.";
+        btn.innerText = "Retry";
+    }
+}
 
   async function sendMentorMessageDash() {
     const input = document.getElementById('mentorChatInputDash');
@@ -1911,12 +1973,49 @@
     }
   }
 
-  function handleMentorKeydown(event) {
+  // 1. The Listener: Checks if the user pressed 'Enter'
+function handleMentorKeydown(event) {
     if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault();
-      sendMentorMessageFloat();
+        event.preventDefault(); // Prevents a new line in the textarea
+        const message = event.target.value.trim();
+        if (message) {
+            sendToMentor(message); // Calls the worker
+            event.target.value = ''; // Clears the input box
+        }
     }
-  }
+}
+
+// 2. The Worker: Talks to your Gemini API
+async function sendToMentor(message) {
+    const chatLog = document.getElementById('mentorChatLog');
+    
+    // Add User Message to UI
+    chatLog.innerHTML += `<div class="msg user-msg"><b>You:</b> ${message}</div>`;
+    
+    // Add a temporary "Thinking..." bubble
+    const loadingId = "loading-" + Date.now();
+    chatLog.innerHTML += `<div class="msg ai-msg" id="${loadingId}">Lakshya is thinking...</div>`;
+    chatLog.scrollTop = chatLog.scrollHeight;
+
+    try {
+        const response = await fetch(`${API_BASE}/fire-analysis`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                prompt: message, 
+                context: "mentor_chat" 
+            })
+        });
+
+        const data = await response.json();
+        
+        // Replace "Thinking..." with the real AI response
+        document.getElementById(loadingId).innerHTML = `<b>Lakshya:</b> ${data.ai_summary}`;
+    } catch (err) {
+        document.getElementById(loadingId).innerText = "Connection lost. Is the backend running?";
+    }
+    chatLog.scrollTop = chatLog.scrollHeight;
+}
 
   /* ────── KEEPING GLOBALS FOR BACKWARD COMPATIBILITY ────── */
   function initMentorChat() {

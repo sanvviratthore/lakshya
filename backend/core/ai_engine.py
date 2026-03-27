@@ -1,14 +1,36 @@
 import google.generativeai as genai
-import os
+from core.config import Config
 
-genai.configure(api_key=os.getenv("GEMINI_API_KEY", "YOUR_ACTUAL_KEY_HERE"))
+# Configure the Gemini Model
+genai.configure(api_key=Config.GEMINI_API_KEY)
 model = genai.GenerativeModel('gemini-1.5-flash')
 
-def generate_financial_insights(projection_results):
-    prob = projection_results['success_probability']
-    median_end = projection_results['median_path'][-1]
-    prompt = f"As Lakshya AI: Success Probability: {prob:.1f}%, Corpus: ₹{median_end:,.0f}. Provide: (1) Verdict (Safe/Risky/Dream), (2) 1 Tactical Move, (3) Encouragement. Be concise."
+def generate_financial_insights(projection_data, profile_data=None):
+    """
+    This is the function routes.py is looking for.
+    It takes the Monte Carlo results and turns them into a strategy.
+    """
+    # Extract some basic stats for the prompt
+    prob = projection_data.get('success_probability', 'N/A')
+    
+    prompt = f"""
+    You are Lakshya AI, a premium financial strategist.
+    
+    DATA POINTS:
+    - FIRE Success Probability: {prob}%
+    - User Profile: {profile_data if profile_data else 'General Investor'}
+    
+    TASK:
+    Provide a concise, 3-sentence financial verdict. 
+    1. Tell them if they are on track.
+    2. Give one specific tip to improve their 'Wealth Velocity'.
+    3. End with a bold, professional sign-off.
+    
+    Tone: Sophisticated, Direct, and High-End.
+    """
+
     try:
-        return model.generate_content(prompt).text
+        response = model.generate_content(prompt)
+        return response.text
     except Exception as e:
-        return f"AI Analysis momentarily offline. (Error: {str(e)})"
+        return f"Lakshya AI is currently analyzing market patterns. (Error: {str(e)})"
