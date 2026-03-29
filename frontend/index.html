@@ -1617,7 +1617,9 @@
 
 <script>
 const STORAGE_KEY = 'lakshya_user_data';
-const API_BASE = "https://lakshya-jk5c.onrender.com/api/v1";
+const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? 'http://localhost:8000/api/v1'
+  : 'https://lakshya-jk5c.onrender.com/api/v1';
 
   let userData = null;
   
@@ -1998,21 +2000,20 @@ async function sendToMentor(message) {
     chatLog.scrollTop = chatLog.scrollHeight;
 
     try {
-        const response = await fetch(`${API_BASE}/fire-analysis`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                prompt: message, 
-                context: "mentor_chat" 
-            })
-        });
+      const response = await fetch(`${API_BASE}/mentor-chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: message }]
+        })
+      });
 
-        const data = await response.json();
-        
-        // Replace "Thinking..." with the real AI response
-        document.getElementById(loadingId).innerHTML = `<b>Lakshya:</b> ${data.ai_summary}`;
+      const data = await response.json();
+      const reply = (data.reply || 'I am here whenever you need me.').trim();
+      // Replace "Thinking..." with the real AI response
+      document.getElementById(loadingId).innerHTML = `<b>Lakshya:</b> ${reply}`;
     } catch (err) {
-        document.getElementById(loadingId).innerText = "Connection lost. Is the backend running?";
+      document.getElementById(loadingId).innerText = "Connection lost. Is the backend running?";
     }
     chatLog.scrollTop = chatLog.scrollHeight;
 }

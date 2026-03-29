@@ -1,13 +1,15 @@
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
 # Load variables from the .env file in your root folder
-load_dotenv()
+_ROOT_ENV = Path(__file__).resolve().parents[2] / ".env"
+load_dotenv(dotenv_path=_ROOT_ENV)
 
 class Config:
     # --- AI Keys ---
     # Swapped OpenAI for Gemini
-    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
     LLAMA_CLOUD_KEY = os.getenv("LLAMA_CLOUD_API_KEY")
     
     # --- Financial Constants (Standard Indian Market Rates) ---
