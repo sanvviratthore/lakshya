@@ -5,7 +5,7 @@ from agents.fire_planner import FIREPlanner
 # Ensure these internal core modules exist or are updated as we discussed
 from core.parser import StatementParser
 from core.math_utils import FinancialEngine
-from core.ai_engine import generate_financial_insights 
+from core.ai_engine import generate_financial_insights, generate_mentor_chat_reply
 import shutil
 import os
 
@@ -85,3 +85,13 @@ async def get_health_score(data: dict = Body(...)):
     # data expects {'metrics': {...}, 'profile': {...}}
     health_agent = MoneyHealthScore(data['metrics'], data['profile'])
     return health_agent.get_comprehensive_score()
+
+@router.post("/mentor-chat")
+async def mentor_chat(data: dict = Body(...)):
+    messages = data.get("messages", [])
+    profile = data.get("profile", None)
+    if not isinstance(messages, list) or len(messages) == 0:
+        raise HTTPException(status_code=400, detail="Messages are required")
+
+    reply = generate_mentor_chat_reply(messages, profile)
+    return {"reply": reply}
