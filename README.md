@@ -1,111 +1,181 @@
-# 💰 Lakshya AI - AI-Powered Financial Strategy Engine
+# Lakshya — AI Money Mentor for Indian Investors
 
-An intelligent personal finance mentor built for Indian investors. Upload your CAMS statement, get a portfolio X-Ray, assess your financial health, and plan your path to FIRE — all in one place.
+> **"Your money, finally clear."**  
+> Upload your CAMS statement, get a portfolio X-Ray, check your financial health, and find out exactly when you can retire — all powered by AI.
 
-![FastAPI](https://img.shields.io/badge/FastAPI-0.104-009688?style=flat-square)
-![React](https://img.shields.io/badge/React-18.2-61DAFB?style=flat-square)
-![Python](https://img.shields.io/badge/Python-3.9+-3776AB?style=flat-square)
-![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=flat-square)
+## Demo
+
+> 🔗 **[https://lakshya-jade.vercel.app/](https://lakshya-jade.vercel.app/)**
+
+<!-- Replace YOUR_DEMO_LINK_HERE with your Render / Vercel / Railway URL -->
 
 ---
 
-## Features
+## What Lakshya Does
 
-- **Portfolio X-Ray** — Upload CAMS PDF statements to detect fund overlap, identify savings leaks, and get rebalancing suggestions
-- **Financial Health Score** — 0-100 score across income, emergency fund, debt, and investment rate
-- **FIRE Projection** — Monte Carlo simulation projecting retirement timeline and probability
-- **Real-time AI Insights** — Powered by Google Gemini 1.5 Flash
+| Feature | Description |
+|---|---|
+| **Portfolio X-Ray** | Upload your CAMS PDF — detect fund overlap, fee leaks, and get rebalancing suggestions |
+| **Money Health Score** | Get a 0–100 score across savings rate, emergency fund, debt, and investment behaviour |
+| **FIRE Planner** | Monte Carlo simulation across 10,000 scenarios — find your exact retirement probability |
+| **AI Money Mentor** | Chat with Lakshya in plain English — powered by Google Gemini 2.0 Flash |
 
 ---
 
 ## Architecture
 ```
-React Frontend (Port 3000)
-        │ Axios REST
-        ↓
-FastAPI Backend (Port 8000)
-        │
-        ├── Portfolio X-Ray Agent
-        ├── Health Score Agent
-        └── FIRE Planner Agent
+┌─────────────────────────────────┐
+│     Frontend  (HTML / JS)       │
+│  Portfolio · Health · FIRE      │
+│  AI Chat · Dashboard            │
+└──────────────┬──────────────────┘
+               │ REST / JSON
+               ▼
+┌─────────────────────────────────┐
+│     FastAPI Backend (Python)    │
+│                                 │
+│  ┌──────────┐  ┌─────────────┐  │
+│  │ Portfolio│  │   Health    │  │
+│  │  X-Ray   │  │   Score     │  │
+│  └──────────┘  └─────────────┘  │
+│  ┌──────────┐  ┌─────────────┐  │
+│  │  FIRE    │  │  AI Chat    │  │
+│  │ Planner  │  │  (Gemini)   │  │
+│  └──────────┘  └─────────────┘  │
+└─────────────────────────────────┘
 ```
-
----
 
 ## Tech Stack
 
 | Layer | Technology |
-|-------|-----------|
-| Backend | FastAPI, Python 3.9+ |
-| AI Engine | Google Gemini 1.5 Flash |
-| PDF Processing | LlamaCloud |
-| Financial Math | NumPy, SciPy, Pandas |
-| Frontend | React 18, Tailwind CSS, Recharts |
-| Infra | Docker, Docker Compose |
+|---|---|
+| **Backend** | FastAPI, Python 3.11 |
+| **AI Engine** | Google Gemini 2.0 Flash |
+| **PDF Parsing** | LlamaCloud / LlamaParse |
+| **Financial Math** | NumPy, SciPy, Pandas, pyxirr |
+| **Frontend** | Vanilla JS, HTML5 Canvas |
+| **Infrastructure** | Docker, Render |
 
 ---
 
-## Setup
+## Quick Start
 
 ### Prerequisites
-- Python 3.9+, Node.js 18+, Docker (optional)
-- API keys: `GOOGLE_API_KEY`, `LLAMA_CLOUD_API_KEY`
 
-### Environment Variables
-Create a `.env` file in the root:
+- Python 3.9+
+- API keys: `GEMINI_API_KEY`, `OPENAI_API_KEY`, `LLAMA_CLOUD_API_KEY`
+
+### 1. Clone the repo
 ```bash
-GOOGLE_API_KEY=your_google_api_key
-LLAMA_CLOUD_API_KEY=your_llama_api_key
-REACT_APP_API_URL=http://localhost:8000/api/v1
+git clone https://github.com/sanvviratthore/lakshya.git
+cd lakshya
 ```
 
-### Run with Docker (Recommended)
-```bash
-docker-compose up --build
-```
-- Frontend: http://localhost:3000
-- Backend: http://localhost:8000
-- API Docs: http://localhost:8000/docs
+### 2. Set up environment variables
 
-### Run Locally
-```bash
-# Backend
-cd backend && pip install -r requirements.txt && python main.py
-
-# Frontend
-cd frontend && npm install && npm start
+Create a `.env` file in the root directory:
+```env
+GEMINI_API_KEY=your_gemini_api_key_here
+OPENAI_API_KEY=your_openai_api_key_here
+LLAMA_CLOUD_API_KEY=your_llama_cloud_api_key_here
 ```
+
+> ⚠️ Never commit your `.env` file. It is already in `.gitignore`.
+
+### 3. Run the backend
+```bash
+cd backend
+pip install -r requirements.txt
+python main.py
+```
+
+Backend runs at `http://localhost:8000`  
+API docs at `http://localhost:8000/docs`
+
+### 4. Open the frontend
+
+Just open `frontend/index.html` in your browser — no build step needed.
 
 ---
 
-## API Endpoints
+## 📡 API Endpoints
 
 | Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/analyze-portfolio` | Upload CAMS PDF, get fund analysis |
-| POST | `/get-health-score` | Submit financials, get health score |
-| POST | `/project-fire` | Run Monte Carlo FIRE simulation |
+|---|---|---|
+| `POST` | `/api/v1/chat` | AI money mentor chat (Gemini) |
+| `POST` | `/api/v1/analyze-portfolio` | Upload CAMS PDF, get fund analysis |
+| `POST` | `/api/v1/fire-analysis` | Run Monte Carlo FIRE simulation |
+| `POST` | `/api/v1/comprehensive-health` | Submit financials, get health score |
+| `POST` | `/api/v1/auth/login` | User authentication |
+| `GET`  | `/` | Health check |
 
 ---
 
 ## AI Agents
 
-**PortfolioXRay** — Parses CAMS statements, calculates XIRR, detects overlap, flags underperforming funds
+### PortfolioXRay
+Parses CAMS statements via LlamaParse, calculates XIRR, detects fund overlap across holdings, flags regular plans vs direct plans, and estimates annual fee savings.
 
-**HealthScore** — Scores financial health across 6 dimensions: income ratio, emergency fund, debt, tax, insurance, retirement readiness
+### HealthScore
+Scores financial health across 6 dimensions: savings rate, emergency fund coverage, debt-to-income ratio, tax efficiency, insurance adequacy, and retirement readiness.
 
-**FIREPlanner** — Runs 10,000 Monte Carlo scenarios, outputs probability of FIRE by target date with required SIP amounts
+### FIREPlanner
+Runs 10,000 Monte Carlo scenarios using historical Indian market volatility. Outputs probability of reaching your corpus by target date, with median / optimistic / conservative trajectories.
+
+### Lakshya Mentor
+Context-aware conversational AI built on Gemini 2.0 Flash with a system prompt tuned for Indian personal finance — SIPs, 80C, NPS, ELSS, term insurance, and more.
+
+---
+
+## Project Structure
+```
+lakshya/
+├── backend/
+│   ├── main.py                  # FastAPI app + CORS + keep-alive
+│   ├── api/
+│   │   └── routes.py            # All API endpoints
+│   ├── agents/
+│   │   ├── portfolio_xray.py    # Overlap + fee leak detection
+│   │   ├── health_score.py      # Financial health scoring
+│   │   └── fire_planner.py      # Monte Carlo simulation
+│   ├── core/
+│   │   ├── parser.py            # CAMS PDF parser (LlamaParse)
+│   │   ├── math_utils.py        # XIRR, compounding helpers
+│   │   ├── ai_engine.py         # Gemini integration
+│   │   └── config.py            # Env var loader + validation
+│   └── requirements.txt
+├── frontend/
+│   └── index.html               # Single-file frontend
+├── .env                         # Local secrets (never commit)
+├── .gitignore
+└── README.md
+```
 
 ---
 
 ## Roadmap
 
-- [ ] PostgreSQL integration for persistent storage
+- [ ] PostgreSQL for persistent user portfolios
 - [ ] JWT-based multi-user authentication
-- [ ] Direct broker API integration
-- [ ] Tax optimization recommendations
+- [ ] Direct MF API integration (MFU / BSE StarMF)
+- [ ] Tax optimisation recommendations (LTCG / STCG / 80C)
 - [ ] Mobile app (React Native)
+- [ ] WhatsApp bot integration
 
 ---
 
-**Built for Indian investors. Powered by AI. Made for financial independence.**
+## Contributing
+
+Pull requests are welcome. For major changes, open an issue first to discuss what you'd like to change.
+
+---
+
+## 📄 License
+
+MIT © [Sanvi Ratthore](https://github.com/sanvviratthore)
+
+---
+
+<div align="center">
+  Built for Indian investors 🇮🇳 · Powered by Gemini AI 🤖 · Made for financial independence 🔥
+</div>
